@@ -3,7 +3,14 @@ import cors from "cors";
 import { Groq } from "groq-sdk";
 
 const app = express();
-app.use(cors());
+
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET"],
+  })
+);
+
 app.use(express.json());
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
