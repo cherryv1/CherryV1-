@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { v4 as uuid } from "uuid";
-import OpenAI from "openai";
+import Groq from "groq-sdk";
 
 dotenv.config();
 
@@ -10,9 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🧠 Inicializar OpenAI con tu API KEY
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+// 🧠 Inicializar GROQ con tu API KEY
+const client = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
 });
 
 // 🔐 Middleware para validar MASTER_KEY
@@ -36,12 +36,12 @@ app.post("/api/ai", verifyMasterKey, async (req, res) => {
     }
 
     const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "mixtral-8x7b-32768",
       messages: [
         {
           role: "system",
           content:
-            "Eres Jarvisito, un asistente inteligente, rápido, con buen humor y respuestas cortas y claras.",
+            "Eres Jarvisito, un asistente inteligente, rápido, con humor y respuestas claras.",
         },
         {
           role: "user",
@@ -58,7 +58,10 @@ app.post("/api/ai", verifyMasterKey, async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Error en la API:", err);
-    res.status(500).json({ error: "Internal Server Error", details: err.message });
+    res.status(500).json({
+      error: "Internal Server Error",
+      details: err.message,
+    });
   }
 });
 
