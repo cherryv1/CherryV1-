@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: cherry-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    envVars:
+      - key: MASTER_KEY
+        sync: false
+      - key: NODE_VERSION
+        value: 18
