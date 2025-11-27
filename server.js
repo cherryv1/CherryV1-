@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { v4 as uuid } from "uuid";
-import Groq from "groq-sdk";
+import OpenAI from "openai";
 
 dotenv.config();
 
@@ -10,9 +10,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🧠 Inicializar GROQ con tu API KEY
-const client = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
+// 🌐 Ruta raíz GET
+app.get("/", (req, res) => {
+  res.send("🍒 Cherry Backend funcionando correctamente.");
+});
+
+// 🧠 Inicializar OpenAI con tu API KEY
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 // 🔐 Middleware para validar MASTER_KEY
@@ -25,7 +30,7 @@ function verifyMasterKey(req, res, next) {
 }
 
 /**
- * 🧠 Ruta principal Jarvis /api/ai
+ * 🤖 Ruta principal Cherry /api/ai
  */
 app.post("/api/ai", verifyMasterKey, async (req, res) => {
   try {
@@ -36,12 +41,12 @@ app.post("/api/ai", verifyMasterKey, async (req, res) => {
     }
 
     const completion = await client.chat.completions.create({
-      model: "mixtral-8x7b-32768",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
           content:
-            "Eres Jarvisito, un asistente inteligente, rápido, con humor y respuestas claras.",
+            "Eres CHERRY, un asistente inteligente, rápido, amable y preciso. Responde siempre de forma clara, útil y directa.",
         },
         {
           role: "user",
@@ -58,10 +63,7 @@ app.post("/api/ai", verifyMasterKey, async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Error en la API:", err);
-    res.status(500).json({
-      error: "Internal Server Error",
-      details: err.message,
-    });
+    res.status(500).json({ error: "Internal Server Error", details: err.message });
   }
 });
 
@@ -70,5 +72,5 @@ app.post("/api/ai", verifyMasterKey, async (req, res) => {
  */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🔥 Cherry Backend online on port ${PORT}`);
+  console.log(`🍒 Cherry Backend online on port ${PORT}`);
 });
