@@ -15,9 +15,9 @@ app.use(express.json());
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-app.get("/cherry", async (req, res) => {
+app.post("/cherry", async (req, res) => {
   try {
-    const userMessage = req.query.msg || "Hola, soy Cherry 🍒";
+    const userMessage = req.body.message || "Hola, soy Cherry 🍒";
 
     const completion = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
