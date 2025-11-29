@@ -1,17 +1,25 @@
 {
   "name": "cherry-backend",
-  "version": "1.0.0",
-  "description": "Backend oficial de CherryV1 usando Groq AI.",
+  "version": "2.0.0",
+  "description": "Backend oficial de Cherry V2 usando Groq AI con Llama 3.3",
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "groq-sdk": "latest",
+    "groq-sdk": "^0.7.0",
     "uuid": "^9.0.1"
-  }
+  },
+  "keywords": ["cherry", "ai", "chatbot", "groq", "llama"],
+  "author": "CherryV1",
+  "license": "MIT"
 }
