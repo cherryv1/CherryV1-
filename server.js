@@ -106,7 +106,7 @@ app.use((req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🍒 Cherry V2 Backend está escuchando en el puerto ${PORT}`);
   console.log(`🌐 Ambiente: ${process.env.NODE_ENV || 'development'}`);
