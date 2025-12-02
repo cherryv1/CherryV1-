@@ -4,6 +4,9 @@ import { Groq } from "groq-sdk";
 
 const app = express();
 
+// Versión de la aplicación
+const APP_VERSION = "V3 Max";
+
 // CORS configurado para permitir el frontend
 app.use(
   cors({
@@ -23,7 +26,7 @@ app.get("/", (req, res) => {
   res.json({ 
     status: "ok", 
     service: "Cherry V2 Backend",
-    version: "2.0.0",
+    version: APP_VERSION,
     timestamp: new Date().toISOString()
   });
 });
@@ -31,6 +34,7 @@ app.get("/", (req, res) => {
 app.get("/health", (req, res) => {
   res.json({ 
     status: "healthy", 
+    version: APP_VERSION,
     uptime: process.uptime(),
     memory: process.memoryUsage()
   });
