@@ -7,7 +7,7 @@ const app = express();
 // CORS configurado para permitir el frontend
 app.use(
   cors({
-    origin: "*",
+    origin: "https://cherry-frontend-5nxs.onrender.com",
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type", "x-master-key"],
   })
