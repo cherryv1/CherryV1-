@@ -89,31 +89,19 @@ app.post("/cherry", async (req, res) => {
   }
 });
 
-// GET endpoint para /cherry (compatibilidad)
+// GET /cherry - compatibilidad con query param
 app.get("/cherry", async (req, res) => {
-  try {
-    const msg = req.query.msg || "Hola, ¿en qué te puedo ayudar?";
-    const result = await orchestrateRequest(msg);
-
-    if (result.success === false) {
-      return res.status(500).json({ error: result.error });
+    try {
+        const msg = req.query.msg || "";
+        // Nota: En el código original se usa orchestrateRequest, que asumo es el cherryEngine.
+        const result = await orchestrateRequest(msg); 
+        return res.json(result);
+    } catch (err) {
+        return res.status(500).json({
+            error: "Error en GET /cherry",
+            details: err.message
+        });
     }
-
-    if (process.env.USE_PROVIDER_TRACE === 'true') {
-      return res.json({
-        provider: result.provider,
-        reply: result.reply,
-        timestamp: result.timestamp,
-        cached: result.cached || false,
-        latency: result.latency || 0
-      });
-    }
-
-    res.json({ reply: result.reply });
-  } catch (error) {
-    console.error("[Cherry GET Error]:", error.message);
-    res.status(500).json({ error: error.message });
-  }
 });
 
 // Manejo de rutas no encontradas
