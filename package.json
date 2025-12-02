@@ -1,7 +1,7 @@
 {
   "name": "cherry-backend",
-  "version": "2.0.0",
-  "description": "Backend oficial de Cherry V2 usando Groq AI con Llama 3.3",
+  "version": "3.0.0",
+  "description": "Backend oficial de Cherry V3 Ultra con FASE 6 + FASE 7 + Provider Trace",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -13,6 +13,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "axios": "^1.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",

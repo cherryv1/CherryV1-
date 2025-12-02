@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { Groq } from "groq-sdk";
+import { orchestrateRequest } from "./orchestrator.js";
 
 const app = express();
 
@@ -18,16 +18,17 @@ app.use(
 
 app.use(express.json({ limit: "10mb" }));
 
-// Inicializar Groq con API key desde variables de entorno
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+// Versión mejorada con FASE 6 + FASE 7 + Provider Trace
+const APP_VERSION = "V3 Ultra"; // Actualizado a Ultra con optimizador
 
 // Health check endpoint
 app.get("/", (req, res) => {
   res.json({ 
     status: "ok", 
-    service: "Cherry V2 Backend",
+    service: "Cherry V3 Ultra Backend",
     version: APP_VERSION,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    features: ["FASE 6 - Optimizador Inteligente", "FASE 7 - Tercer Proveedor", "Provider Trace"]
   });
 });
 
@@ -40,65 +41,78 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Endpoint principal de Cherry
+// Endpoint principal de Cherry con FASE 6 + FASE 7 + Provider Trace
 app.post("/cherry", async (req, res) => {
   try {
     const userMessage = req.body.message || "Hola, soy Cherry 🍒";
     const imageData = req.body.image || null;
 
-    console.log(`[Cherry] Mensaje recibido: ${userMessage.substring(0, 50)}...`);
+    console.log(`[Cherry V3 Ultra] Mensaje recibido: ${userMessage.substring(0, 50)}...`);
 
-    // Preparar mensajes para Groq
-    const messages = [
-      { 
-        role: "system", 
-        content: "Eres Cherry, un asistente de IA amable, útil y profesional. Respondes en español de manera clara y concisa."
-      },
-      { 
-        role: "user", 
-        content: userMessage 
-      }
-    ];
+    // Usar orchestrator con FASE 6 + FASE 7 + Provider Trace
+    const result = await orchestrateRequest(userMessage);
 
-    // Si hay imagen, agregar contexto (Groq no soporta visión directamente, pero podemos mejorar el prompt)
-    if (imageData) {
-      messages[1].content = `[El usuario ha compartido una imagen] ${userMessage}`;
+    if (result.success === false) {
+      console.error(`[Cherry Error] ${result.error}`);
+      return res.status(500).json({ 
+        error: result.error || "Error al procesar la solicitud",
+        provider: result.provider
+      });
     }
 
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: messages,
-      temperature: 0.7,
-      max_tokens: 2048,
-      top_p: 1,
-      stream: false
-    });
+    console.log(`[Cherry V3 Ultra] Respuesta generada por ${result.provider}: ${result.reply.substring(0, 50)}...`);
 
-    const reply = completion.choices?.[0]?.message?.content || "Lo siento, no pude generar una respuesta.";
-    
-    console.log(`[Cherry] Respuesta generada: ${reply.substring(0, 50)}...`);
+    // Provider Trace
+    if (process.env.USE_PROVIDER_TRACE === 'true') {
+      return res.json({
+        provider: result.provider,
+        reply: result.reply,
+        timestamp: result.timestamp,
+        cached: result.cached || false,
+        latency: result.latency || 0,
+        model: "V3 Ultra Multi-Provider"
+      });
+    }
 
     res.json({ 
-      reply: reply,
-      model: "llama-3.3-70b-versatile",
+      reply: result.reply,
+      model: "V3 Ultra",
       timestamp: new Date().toISOString()
     });
 
   } catch (error) {
     console.error("[Cherry Error]:", error.message);
-    
-    // Manejo de errores específicos
-    if (error.message.includes("API key")) {
-      return res.status(500).json({ 
-        error: "Error de configuración del servidor",
-        details: "API key no configurada correctamente"
-      });
-    }
-
     res.status(500).json({ 
       error: "Error interno del servidor",
       details: error.message 
     });
+  }
+});
+
+// GET endpoint para /cherry (compatibilidad)
+app.get("/cherry", async (req, res) => {
+  try {
+    const msg = req.query.msg || "Hola, ¿en qué te puedo ayudar?";
+    const result = await orchestrateRequest(msg);
+
+    if (result.success === false) {
+      return res.status(500).json({ error: result.error });
+    }
+
+    if (process.env.USE_PROVIDER_TRACE === 'true') {
+      return res.json({
+        provider: result.provider,
+        reply: result.reply,
+        timestamp: result.timestamp,
+        cached: result.cached || false,
+        latency: result.latency || 0
+      });
+    }
+
+    res.json({ reply: result.reply });
+  } catch (error) {
+    console.error("[Cherry GET Error]:", error.message);
+    res.status(500).json({ error: error.message });
   }
 });
 
