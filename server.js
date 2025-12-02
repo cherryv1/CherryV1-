@@ -4,8 +4,8 @@ import { orchestrateRequest } from "./orchestrator.js";
 
 const app = express();
 
-// Versión de la aplicación
-const APP_VERSION = "V3 Max";
+// Versión de la aplicación (solo UNA)
+const APP_VERSION = "V3 Ultra";
 
 // CORS configurado para permitir el frontend
 app.use(
@@ -17,9 +17,6 @@ app.use(
 );
 
 app.use(express.json({ limit: "10mb" }));
-
-// Versión mejorada con FASE 6 + FASE 7 + Provider Trace
-const APP_VERSION = "V3 Ultra"; // Actualizado a Ultra con optimizador
 
 // Health check endpoint
 app.get("/", (req, res) => {
@@ -41,29 +38,23 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Endpoint principal de Cherry con FASE 6 + FASE 7 + Provider Trace
+// Endpoint principal POST
 app.post("/cherry", async (req, res) => {
   try {
     const userMessage = req.body.message || "Hola, soy Cherry 🍒";
-    const imageData = req.body.image || null;
 
     console.log(`[Cherry V3 Ultra] Mensaje recibido: ${userMessage.substring(0, 50)}...`);
 
-    // Usar orchestrator con FASE 6 + FASE 7 + Provider Trace
     const result = await orchestrateRequest(userMessage);
 
     if (result.success === false) {
-      console.error(`[Cherry Error] ${result.error}`);
-      return res.status(500).json({ 
-        error: result.error || "Error al procesar la solicitud",
+      return res.status(500).json({
+        error: result.error,
         provider: result.provider
       });
     }
 
-    console.log(`[Cherry V3 Ultra] Respuesta generada por ${result.provider}: ${result.reply.substring(0, 50)}...`);
-
-    // Provider Trace
-    if (process.env.USE_PROVIDER_TRACE === 'true') {
+    if (process.env.USE_PROVIDER_TRACE === "true") {
       return res.json({
         provider: result.provider,
         reply: result.reply,
@@ -74,39 +65,37 @@ app.post("/cherry", async (req, res) => {
       });
     }
 
-    res.json({ 
+    res.json({
       reply: result.reply,
       model: "V3 Ultra",
       timestamp: new Date().toISOString()
     });
 
   } catch (error) {
-    console.error("[Cherry Error]:", error.message);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Error interno del servidor",
-      details: error.message 
+      details: error.message
     });
   }
 });
 
-// GET /cherry - compatibilidad con query param
+// GET /cherry (compatibilidad)
 app.get("/cherry", async (req, res) => {
-    try {
-        const msg = req.query.msg || "";
-        // Nota: En el código original se usa orchestrateRequest, que asumo es el cherryEngine.
-        const result = await orchestrateRequest(msg); 
-        return res.json(result);
-    } catch (err) {
-        return res.status(500).json({
-            error: "Error en GET /cherry",
-            details: err.message
-        });
-    }
+  try {
+    const msg = req.query.msg || "";
+    const result = await orchestrateRequest(msg);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({
+      error: "Error en GET /cherry",
+      details: err.message
+    });
+  }
 });
 
-// Manejo de rutas no encontradas
+// Rutas no encontradas
 app.use((req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     error: "Ruta no encontrada",
     availableEndpoints: ["/", "/health", "/cherry"]
   });
@@ -114,7 +103,5 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🍒 Cherry V2 Backend está escuchando en el puerto ${PORT}`);
-  console.log(`🌐 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`⏰ Iniciado: ${new Date().toISOString()}`);
+  console.log(`🍒 Cherry V3 Ultra Backend iniciado en puerto ${PORT}`);
 });
