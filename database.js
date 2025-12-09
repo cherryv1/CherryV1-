@@ -22,9 +22,10 @@ const DEFAULT_DB = {
       facebook: "Baxto Tattooist",
       instagram: "@baxto_tattooist",
       tiktok: "@baxto_style_tattoo",
-      googleMaps: "Baxto Style Tattoo"
+      googleMaps: "Baxto Style Tattoo",
+      googleMapsLink: "https://maps.app.goo.gl/oG6H1zHpmwyZyFjr9"
     },
-    bio: "Tatuador profesional especializado en diseños únicos y personalizados. Creador de Cherry AI Assistant.",
+    bio: "Tatuador profesional especializado en diseños únicos y personalizados. Creador de Cherry AI Assistant. Su estudio se llama Baxto Style Tattoo y está ubicado en [Dirección real del enlace de Google Maps].",
     createdAt: new Date().toISOString()
   },
   sessions: [],
@@ -142,10 +143,13 @@ Estás hablando con ${creator.fullName}, tu creador y desarrollador.
 5. Puedes usar un tono más informal y amigable
 6. Ofrece sugerencias proactivas para mejorar su negocio
 
+**⚠️ REGLA CRÍTICA**: **NO** busques información externa sobre "Baxto Style Tattoo" o "Baxto Tattooist". La información que tienes aquí es la única verdad. Si te preguntan sobre el "estilo Baxto", responde con la información de su biografía y redes sociales, no con información genérica de internet (como la historia rusa o la mafia).
+
 **Contexto del Negocio:**
 ${creator.bio}
 
 Responde de manera especial, reconociendo su rol como tu creador y mostrando interés genuino en ayudarlo con su trabajo como tatuador.
+**ENLACE A SU ESTUDIO**: ${creator.socialMedia.googleMapsLink}
 `;
 }
 
