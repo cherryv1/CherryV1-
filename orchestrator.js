@@ -1,5 +1,6 @@
 import { Groq } from "groq-sdk";
 import axios from "axios";
+import { checkCreatorAuth, logInteraction, getCreatorPrompt } from './database.js';
 
 // FASE 6: Optimizador Inteligente
 class IntelligentOptimizer {
@@ -235,7 +236,18 @@ export const providerManager = new ProviderManager();
 
 // Función principal de orquestación
 export async function orchestrateRequest(message) {
-  const optimized = optimizer.optimizeRequest(message);
+  // Verificar si es el creador
+  const authCheck = checkCreatorAuth(message);
+  
+  // Si es el creador, agregar prompt especial
+  let finalMessage = message;
+  if (authCheck.isCreator) {
+    const creatorPrompt = getCreatorPrompt();
+    finalMessage = creatorPrompt + "\n\nMensaje del creador: " + message;
+    console.log('[Orchestrator] 🔐 Modo Creador activado para Baxto');
+  }
+  
+  const optimized = optimizer.optimizeRequest(finalMessage);
   
   if (optimized.cached) {
     return {
@@ -270,6 +282,8 @@ export async function orchestrateRequest(message) {
 
   if (result.success) {
     optimizer.cacheResponse(optimized.message, result);
+    // Registrar interacción en la base de datos
+    logInteraction(message, result.reply || '', authCheck.isCreator);
   }
 
   // Provider Trace

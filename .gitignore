@@ -1,6 +1,7 @@
 node_modules/
 .env
 .env.local
+cherry_database.json
 .DS_Store
 *.log
 npm-debug.log*
